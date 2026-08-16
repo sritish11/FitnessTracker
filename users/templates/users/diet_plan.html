@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Diet Plan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96">
+        <h2 class="text-xl font-bold text-center text-gray-800">✅ Your Diet Plan</h2>
+
+        {% if diet_plan %}
+        <p class="text-gray-700"><strong>Age:</strong> {{ age }} yrs</p>
+        <p class="text-gray-700"><strong>Height:</strong> {{ height }} cm</p>
+        <p class="text-gray-700"><strong>Weight:</strong> {{ weight }} kg</p>
+        <p class="text-gray-700"><strong>Goal:</strong> {{ goal|title }}</p>
+        <p class="text-gray-700"><strong>Calorie Intake:</strong> {{ calories }} kcal</p>
+        <p class="text-gray-700"><strong>Diet Plan:</strong> {{ diet_plan.diet_plan }}</p>
+
+        <h3 class="text-lg font-semibold text-gray-800 mt-4">🍽 Recommended Food Items:</h3>
+        <div class="mt-2 grid grid-cols-2 gap-2">
+            {% for image_url in food_images %}
+                <img src="{{ image_url }}" alt="Recommended Food Item" style="width:150px; height:150px; margin:10px;">
+            {% empty %}
+                <p class="text-gray-500 text-center">No images available.</p>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-red-500 text-center mt-4">❌ No diet plan found for your input.</p>
+    {% endif %}
+
+    <div class="mt-6 flex space-x-2">
+        <a href="{% url 'survey' %}" class="flex-1 bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded text-center transition-colors">
+            🔄 Try Again
+        </a>
+        <a href="{% url 'dashboard' %}" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-2 px-4 rounded text-center transition-colors">
+            📊 Dashboard
+        </a>
+    </div>
+    </div>
+
+</body>
+</html>

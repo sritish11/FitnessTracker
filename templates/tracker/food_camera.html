@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Scan food with your camera or upload an image to detect calories, protein, carbs and fiber." />
+  <title>Scan Your Food — Nutrition Detector</title>
+
+  <!-- Tailwind Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+  <style>
+    .glass { background: linear-gradient(180deg, rgba(255,255,255,0.7), rgba(255,255,255,0.55)); }
+  </style>
+</head>
+<body class="min-h-screen bg-gradient-to-b from-green-50 to-green-100 flex items-center justify-center p-6">
+  <i class="fas fa-dumbbell text-[8rem] text-indigo-300 opacity-20 absolute bottom-4 left-4 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-apple-alt text-[8rem] text-green-300 opacity-20 absolute top-4 right-4 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-carrot text-[6rem] text-orange-300 opacity-20 absolute top-24 left-12 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-bottle-water text-[6rem] text-blue-200 opacity-20 absolute bottom-24 right-12 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-basketball-ball text-[5rem] text-yellow-300 opacity-20 absolute top-1/2 left-2 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-running text-[6rem] text-purple-300 opacity-20 absolute bottom-12 left-1/3 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <!-- Broccoli -->
+  <i class="fas fa-seedling text-[6rem] text-green-400 opacity-20 absolute bottom-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+
+<!-- Fish -->
+  <i class="fas fa-fish text-[5rem] text-blue-300 opacity-20 absolute top-1/3 right-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+
+<!-- Bread -->
+  <i class="fas fa-bread-slice text-[5rem] text-yellow-400 opacity-20 absolute bottom-1/3 left-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <!-- Sun (outdoor / energy) -->
+  <i class="fas fa-sun text-[7rem] text-orange-200 opacity-20 absolute top-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+
+<!-- Bed (rest / recovery) -->
+  <i class="fas fa-bed text-[6rem] text-indigo-200 opacity-20 absolute bottom-8 right-1/3 hidden md:block pointer-events-none select-none z-0"></i>
+  
+  <i class="fas fa-egg text-[5rem] text-yellow-200 opacity-20 absolute bottom-1/2 right-2 hidden md:block pointer-events-none select-none z-0"></i>
+  <main class="max-w-2xl w-full">
+    <section class="bg-white/80 glass rounded-2xl shadow-xl p-6 md:p-8">
+      <header class="flex items-center gap-3 mb-4">
+        <div class="text-2xl">📸</div>
+        <h1 class="text-2xl font-bold text-green-800">Scan Your Food</h1>
+      </header>
+
+      <p class="text-gray-600 text-sm mb-6">Click a picture or upload an image to instantly get calories, protein, carbs, and fiber.</p>
+
+      <!-- ✅ Fixed Django Form -->
+      <form method="post" enctype="multipart/form-data" action="{% url 'food_camera' %}" class="space-y-4">
+        {% csrf_token %}
+
+        <!-- Camera preview container -->
+        <div class="relative w-full h-64 bg-black rounded-xl overflow-hidden flex items-center justify-center shadow-md">
+          <video id="cameraPreview" autoplay playsinline muted class="w-full h-full object-cover" aria-label="Camera preview"></video>
+          <canvas id="snapshotCanvas" class="hidden" aria-hidden="true"></canvas>
+
+          <div id="noCameraText" class="absolute text-white text-sm opacity-80 hidden">Camera not available</div>
+        </div>
+
+        <!-- Capture & Upload Buttons -->
+        <div class="flex flex-col sm:flex-row gap-3 mt-3">
+          <button type="button" id="captureBtn" class="flex-1 py-3 bg-green-500 hover:bg-green-600 text-white font-semibold rounded-xl shadow-md transition transform hover:scale-105" aria-label="Capture photo">📷 Capture</button>
+
+          <label for="fileInput" class="flex-1 py-3 bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold rounded-xl shadow-md text-center cursor-pointer transition transform hover:scale-105">📂 Upload</label>
+          <input type="file" name="food_image" id="fileInput" accept="image/*" class="hidden">
+        </div>
+
+        <!-- Hidden input to send captured image -->
+        <input type="hidden" name="captured_image" id="capturedImageInput">
+
+        <button type="submit" id="submitBtn" class="w-full py-3 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white text-lg font-bold rounded-xl shadow-lg transition transform hover:scale-105 mt-4">🔍 Detect Nutrition</button>
+
+        <p class="text-xs text-gray-500 mt-2">Tip: For best results, place a single food item on a plain background and make sure it's well-lit.</p>
+      </form>
+    </section>
+
+    <footer class="text-center text-xs text-gray-500 mt-4">Built with ❤️ — replace the form action with your server endpoint.</footer>
+  </main>
+
+  <noscript class="fixed bottom-4 left-4 bg-yellow-100 border border-yellow-300 text-yellow-800 px-3 py-2 rounded">JavaScript is required for camera capture.</noscript>
+
+  <script>
+    const video = document.getElementById("cameraPreview");
+    const canvas = document.getElementById("snapshotCanvas");
+    const captureBtn = document.getElementById("captureBtn");
+    const capturedInput = document.getElementById("capturedImageInput");
+    const noCameraText = document.getElementById("noCameraText");
+    const fileInput = document.getElementById("fileInput");
+    const submitBtn = document.getElementById("submitBtn");
+
+    let stream = null;
+
+    async function openCamera() {
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "environment" } });
+        video.srcObject = stream;
+        noCameraText.classList.add('hidden');
+        captureBtn.disabled = false;
+        captureBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+      } catch (err) {
+        noCameraText.classList.remove('hidden');
+        captureBtn.disabled = true;
+        captureBtn.classList.add('opacity-50', 'cursor-not-allowed');
+        console.warn('Camera not available:', err);
+      }
+    }
+
+    openCamera();
+
+    captureBtn.addEventListener('click', () => {
+      if (!stream) return;
+      const ctx = canvas.getContext('2d');
+      canvas.width = video.videoWidth || 1280;
+      canvas.height = video.videoHeight || 720;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      const dataURL = canvas.toDataURL('image/jpeg', 0.92);
+      capturedInput.value = dataURL;
+
+      captureBtn.textContent = '✅ Captured';
+      setTimeout(() => captureBtn.textContent = '📷 Capture', 1500);
+    });
+
+    fileInput.addEventListener('change', async (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        capturedInput.value = reader.result;
+      };
+      reader.readAsDataURL(file);
+    });
+
+    window.addEventListener('pagehide', () => {
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+      }
+    });
+
+    document.querySelector('form').addEventListener('submit', () => {
+      submitBtn.disabled = true;
+      submitBtn.classList.add('opacity-60', 'cursor-not-allowed');
+    });
+  </script>
+</body>
+</html>

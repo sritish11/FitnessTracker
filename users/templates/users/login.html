@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css" rel="stylesheet">
+</head>
+<body class="min-h-screen flex items-center justify-center bg-gray-50">
+    <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden">
+        <div class="bg-gradient-to-r from-blue-700 to-blue-500 text-white text-center py-8 px-6">
+            <h2 class="text-3xl font-bold">Welcome Back</h2>
+            <p class="mt-2 opacity-90">Please enter your credentials to login</p>
+        </div>
+
+        <div class="px-8 py-8">
+            <form method="post" action="" id="loginForm" class="space-y-6">
+                <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+                
+                <div>
+                    <label class="block text-gray-700 text-sm font-bold mb-2" for="username">Username</label>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                            <i class="fas fa-user"></i>
+                        </span>
+                        <input type="text" id="username" name="username" placeholder="Enter your username"
+                            class="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
+                    </div>
+                    <small class="text-red-500 hidden mt-1 block" id="usernameError">Username is required</small>
+                </div>
+                
+                <div>
+                    <div class="flex items-center justify-between mb-2">
+                        <label class="block text-gray-700 text-sm font-bold" for="password">Password</label>
+                        <a href="#" class="text-sm text-blue-600 hover:text-blue-800">Forgot password?</a>
+                    </div>
+                    <div class="relative">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-500">
+                            <i class="fas fa-lock"></i>
+                        </span>
+                        <input type="password" id="password" name="password" placeholder="Enter your password"
+                            class="w-full pl-10 pr-10 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" required>
+                        <button type="button" id="togglePassword" class="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <small class="text-red-500 hidden mt-1 block" id="passwordError">Password is required</small>
+                </div>
+                
+                <div class="flex items-center">
+                    <input type="checkbox" id="remember" name="remember" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded">
+                    <label for="remember" class="ml-2 block text-sm text-gray-700">Remember me</label>
+                </div>
+                
+                <button type="submit"
+                    class="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 transition transform hover:scale-105 font-medium text-lg shadow-md">
+                    Sign In
+                </button>
+            </form>
+            
+            <div class="text-center mt-8 pt-6 border-t border-gray-200">
+                <p class="text-gray-600">
+                    Don't have an account? 
+                    <a href="/register" class="text-blue-600 hover:text-blue-800 font-medium transition">
+                        Register now
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("togglePassword").addEventListener("click", function() {
+            const passwordField = document.getElementById("password");
+            const eyeIcon = this.querySelector("i");
+            
+            if (passwordField.type === "password") {
+                passwordField.type = "text";
+                eyeIcon.classList.remove("fa-eye");
+                eyeIcon.classList.add("fa-eye-slash");
+            } else {
+                passwordField.type = "password";
+                eyeIcon.classList.remove("fa-eye-slash");
+                eyeIcon.classList.add("fa-eye");
+            }
+        });
+        
+        document.getElementById("loginForm").addEventListener("submit", async function(event) {
+            let valid = true;
+            if (!document.getElementById("username").value) {
+                document.getElementById("usernameError").classList.remove("hidden");
+                valid = false;
+            } else {
+                document.getElementById("usernameError").classList.add("hidden");
+            }
+            if (!document.getElementById("password").value) {
+                document.getElementById("passwordError").classList.remove("hidden");
+                valid = false;
+            } else {
+                document.getElementById("passwordError").classList.add("hidden");
+            }
+            if (!valid) {
+                event.preventDefault();
+                return;
+            }
+            
+            const response = await fetch("/custom-login", {
+                method: "GET",
+                credentials: "include"
+            });
+            const data = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(data, "text/html");
+            const csrfToken = doc.querySelector("input[name='csrfmiddlewaretoken']").value;
+            
+            let csrfInput = document.createElement("input");
+            csrfInput.type = "hidden";
+            csrfInput.name = "csrfmiddlewaretoken";
+            csrfInput.value = csrfToken;
+            this.appendChild(csrfInput);
+        });
+    </script>
+</body>
+</html>

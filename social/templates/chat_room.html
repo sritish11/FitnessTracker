@@ -1,0 +1,23 @@
+<div class="max-w-lg mx-auto bg-white rounded-2xl shadow-md p-4">
+  <h2 class="font-bold text-lg mb-4">Chat with {{ friend.username }}</h2>
+  <div class="h-80 overflow-y-auto border p-3 mb-3 rounded-lg">
+    {% for msg in messages %}
+      <div class="{% if msg.sender == request.user %}text-right{% endif %}">
+        <p class="inline-block px-3 py-2 rounded-lg 
+          {% if msg.sender == request.user %}
+            bg-indigo-500 text-white
+          {% else %}
+            bg-gray-200 text-gray-800
+          {% endif %}">
+          {{ msg.content }}
+        </p>
+      </div>
+    {% endfor %}
+  </div>
+  <form method="post" action="{% url 'send_message' friend.id %}" class="flex">
+    {% csrf_token %}
+    <input type="text" name="content" placeholder="Type a message..."
+           class="flex-1 border rounded-l-lg p-2">
+    <button class="bg-indigo-600 text-white px-4 rounded-r-lg">Send</button>
+  </form>
+</div>

@@ -1,0 +1,482 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>{{ request.user.username }}'s Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Teko:wght@700&display=swap');
+    
+    body {
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    
+    .card-container {
+      perspective: 1000px;
+    }
+    
+    .card {
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    
+    .card:hover {
+      transform: rotateY(5deg) rotateX(5deg) scale(1.02);
+    }
+    
+    .shine {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+      pointer-events: none;
+    }
+    
+    .card:hover .shine {
+      left: 100%;
+    }
+    
+    .star {
+      filter: drop-shadow(0 0 3px #ffd700);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .stat-glow {
+      text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+    }
+    
+    .teko-font {
+      font-family: 'Teko', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-900 flex items-center justify-center min-h-screen p-4">
+  <!-- Decorative Icons -->
+  <i class="fas fa-dumbbell text-[8rem] text-indigo-300 opacity-20 fixed bottom-4 left-4 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-apple-alt text-[8rem] text-green-300 opacity-20 fixed top-4 right-4 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-carrot text-[6rem] text-orange-300 opacity-20 fixed top-24 left-12 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-bottle-water text-[6rem] text-blue-200 opacity-20 fixed bottom-24 right-12 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-basketball-ball text-[5rem] text-yellow-300 opacity-20 fixed top-1/2 left-2 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-running text-[6rem] text-purple-300 opacity-20 fixed bottom-12 left-1/3 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-seedling text-[6rem] text-green-400 opacity-20 fixed bottom-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-fish text-[5rem] text-blue-300 opacity-20 fixed top-1/3 right-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-bread-slice text-[5rem] text-yellow-400 opacity-20 fixed bottom-1/3 left-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-sun text-[7rem] text-orange-200 opacity-20 fixed top-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-bed text-[6rem] text-indigo-200 opacity-20 fixed bottom-8 right-1/3 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-egg text-[5rem] text-yellow-200 opacity-20 fixed bottom-1/2 right-2 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-seedling text-[6rem] text-green-400 opacity-20 fixed bottom-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+  <i class="fas fa-water text-[5rem] text-blue-400 opacity-20 fixed top-1/3 left-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+  
+
+  <div class="card-container">
+    <form method="POST" enctype="multipart/form-data"
+          class="card bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden relative" style="width: 400px; max-width: 95vw;">
+      {% csrf_token %}
+      
+      <div class="shine"></div>
+
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 flex justify-between items-center">
+        <div class="text-white text-xl font-bold tracking-wider">GYM</div>
+        <div class="bg-red-500 text-white px-4 py-1 text-sm font-bold skew-x-[-10deg] shadow-lg">
+          SIGNATURE LIFTS
+        </div>
+      </div>
+
+      <!-- Image Section -->
+      <div class="relative bg-black">
+        <div class="aspect-video bg-gradient-to-br from-gray-700 to-gray-900 bg-cover bg-center relative overflow-hidden"
+             style="background-image: url('{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'default_profile.png' %}{% endif %}');">
+          <div class="absolute inset-0 bg-black/30"></div>
+          
+          <!-- Edit Buttons (Top Right) -->
+          <div class="absolute top-3 right-3 flex gap-2 z-20">
+            <input type="file" name="profile_picture" id="profileInput" class="hidden" accept="image/*">
+            <button type="button" onclick="document.getElementById('profileInput').click()"
+                    class="bg-indigo-600 hover:bg-indigo-700 px-3 py-2 rounded-full text-xs font-semibold shadow-lg transition">
+              <i class="fas fa-image"></i>
+            </button>
+            <button type="submit"
+                    class="bg-green-600 hover:bg-green-700 px-3 py-2 rounded-full text-xs font-semibold shadow-lg transition">
+              <i class="fas fa-save"></i>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Union Jack Flag -->
+
+
+      <!-- Name Banner -->
+      <div class="bg-gradient-to-r from-red-600 via-red-700 to-red-600 py-3 text-center relative overflow-hidden">
+        <div class="text-white text-4xl font-bold tracking-wide stat-glow teko-font">
+          {{ request.user.username|upper }}®
+        </div>
+        <div class="wwe-signature-view text-yellow-300 text-2xl font-bold tracking-wider stat-glow teko-font cursor-pointer hover:text-yellow-200 transition">
+          {% if profile.signature_move %}{{ profile.signature_move|upper }}{% else %}BEST{% endif %}
+        </div>
+        <input type="hidden" name="best_workout" class="wwe-signature-hidden" value="{% if profile.signature_move %}{{ profile.signature_move }}{% else %}BEST{% endif %}">
+        <div class="wwe-signature-edit hidden mt-2">
+          <input type="text" class="wwe-signature-input bg-black/60 border-2 border-yellow-400 text-yellow-300 text-xl font-bold px-3 py-1 rounded text-center wwe-teko-font uppercase" 
+                 value="{% if profile.signature_move %}{{ profile.signature_move }}{% else %}BEST{% endif %}" 
+                 placeholder="Signature Move" maxlength="25">
+          <div class="flex justify-center gap-2 mt-2">
+            <button type="button" class="wwe-signature-cancel bg-gray-600 hover:bg-gray-700 px-3 py-1 rounded text-xs text-white">Cancel</button>
+            <button type="button" class="wwe-signature-save bg-green-600 hover:bg-green-700 px-3 py-1 rounded text-xs text-white">Save</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Star Rating -->
+      <div class="bg-gray-900 py-3 flex justify-center gap-2">
+        <span class="star text-yellow-400 text-2xl">★</span>
+        <span class="star text-yellow-400 text-2xl">★</span>
+        <span class="star text-yellow-400 text-4xl">★</span>
+        <span class="star text-yellow-400 text-2xl">★</span>
+        <span class="star text-yellow-400 text-2xl">★</span>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="bg-gradient-to-b from-gray-800 to-gray-900 p-4">
+        <div class="flex justify-between items-start gap-2">
+          <!-- Defence Stats (Left) -->
+          <div class="text-left flex-1">
+            <div class="text-blue-400 text-5xl font-bold stat-glow mb-2 teko-font" id="defenceTotal">0</div>
+            <div class="text-white text-xs uppercase tracking-wider mb-2 font-bold">UPPER</div>
+            
+            <div id="defenceStats" class="space-y-2">
+              {% for workout in profile.workouts %}
+              {% if forloop.counter <= 2 %}
+              <div class="workout-card">
+                <div class="view-mode">
+                  <div class="flex items-center gap-2">
+                    <span class="text-yellow-400 text-sm">⭐</span>
+                    <div class="flex-1">
+                      <div class="flex justify-between items-center">
+                        <span class="workout-name text-white text-xs font-bold uppercase">{{ workout.name }}</span>
+                        <span class="workout-value text-blue-300 text-sm font-bold">{{ workout.value }}</span>
+                      </div>
+                    </div>
+                    <button type="button" class="edit-btn text-indigo-300 hover:text-indigo-100 text-xs ml-1">
+                      <i class="fas fa-pencil"></i>
+                    </button>
+                    <button type="button" class="delete-btn text-red-400 hover:text-red-600 text-xs">
+                      <i class="fas fa-times"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="edit-mode hidden">
+                  <input type="text" class="workout-name-input w-full mb-1 px-2 py-1 rounded bg-black/40 border border-indigo-400 text-white text-xs font-semibold uppercase"
+                         value="{{ workout.name }}" placeholder="Stat Name">
+                  <input type="number" class="workout-value-input w-full mb-1 px-2 py-1 rounded bg-black/40 border border-indigo-400 text-white text-xs"
+                         value="{{ workout.value }}" placeholder="Value">
+                  <div class="flex justify-end gap-1">
+                    <button type="button" class="cancel-btn bg-gray-600 hover:bg-gray-700 px-2 py-1 rounded text-xs">Cancel</button>
+                    <button type="button" class="save-btn bg-indigo-600 hover:bg-indigo-700 px-2 py-1 rounded text-xs">Save</button>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              {% empty %}
+              {% endfor %}
+            </div>
+
+            <button type="button" class="add-defence-btn bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-full font-semibold text-xs mt-2 shadow">
+              <i class="fas fa-plus"></i> Add
+            </button>
+          </div>
+
+          <!-- WWE Logo (Center) -->
+          <div class="text-center px-2 flex-shrink-0">
+            <div class="text-yellow-400 text-4xl font-bold teko-font">RATS</div>
+            <div class="text-gray-500 text-xs">®</div>
+          </div>
+
+          <!-- Attack Stats (Right) -->
+          <div class="text-right flex-1">
+            <div class="text-red-500 text-5xl font-bold stat-glow mb-2 teko-font" id="attackTotal">0</div>
+            <div class="text-white text-xs uppercase tracking-wider mb-2 font-bold">LOWER</div>
+            
+            <div id="attackStats" class="space-y-2">
+              {% for workout in profile.workouts %}
+              {% if forloop.counter > 2 %}
+              <div class="workout-card">
+                <div class="view-mode">
+                  <div class="flex items-center gap-2 justify-end">
+                    <button type="button" class="delete-btn text-red-400 hover:text-red-600 text-xs">
+                      <i class="fas fa-times"></i>
+                    </button>
+                    <button type="button" class="edit-btn text-indigo-300 hover:text-indigo-100 text-xs mr-1">
+                      <i class="fas fa-pencil"></i>
+                    </button>
+                    <div class="flex-1">
+                      <div class="flex justify-between items-center">
+                        <span class="workout-value text-red-300 text-sm font-bold">{{ workout.value }}</span>
+                        <span class="workout-name text-white text-xs font-bold uppercase">{{ workout.name }}</span>
+                      </div>
+                    </div>
+                    <span class="text-red-400 text-sm">👊</span>
+                  </div>
+                </div>
+
+                <div class="edit-mode hidden">
+                  <input type="text" class="workout-name-input w-full mb-1 px-2 py-1 rounded bg-black/40 border border-indigo-400 text-white text-xs font-semibold uppercase"
+                         value="{{ workout.name }}" placeholder="Stat Name">
+                  <input type="number" class="workout-value-input w-full mb-1 px-2 py-1 rounded bg-black/40 border border-indigo-400 text-white text-xs"
+                         value="{{ workout.value }}" placeholder="Value">
+                  <div class="flex justify-end gap-1">
+                    <button type="button" class="cancel-btn bg-gray-600 hover:bg-gray-700 px-2 py-1 rounded text-xs">Cancel</button>
+                    <button type="button" class="save-btn bg-indigo-600 hover:bg-indigo-700 px-2 py-1 rounded text-xs">Save</button>
+                  </div>
+                </div>
+              </div>
+              {% endif %}
+              {% empty %}
+              {% endfor %}
+            </div>
+
+            <button type="button" class="add-attack-btn bg-red-600 hover:bg-red-700 text-white px-3 py-1 rounded-full font-semibold text-xs mt-2 shadow">
+              <i class="fas fa-plus"></i> Add
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Border -->
+      <div class="bg-gradient-to-r from-red-600 to-red-700 h-2"></div>
+    </form>
+  </div>
+
+  <!-- JS -->
+  <script>
+    const defenceContainer = document.getElementById('defenceStats');
+    const attackContainer = document.getElementById('attackStats');
+    const card = document.querySelector('.card');
+    const container = document.querySelector('.card-container');
+
+    function calculateTotals() {
+      let defenceTotal = 0;
+      let attackTotal = 0;
+
+      defenceContainer.querySelectorAll('.workout-card').forEach(card => {
+        const value = parseInt(card.querySelector('.workout-value').textContent) || 0;
+        defenceTotal += value;
+      });
+
+      attackContainer.querySelectorAll('.workout-card').forEach(card => {
+        const value = parseInt(card.querySelector('.workout-value').textContent) || 0;
+        attackTotal += value;
+      });
+
+      document.getElementById('defenceTotal').textContent = defenceTotal;
+      document.getElementById('attackTotal').textContent = attackTotal;
+    }
+
+    function toggleEdit(card, isEdit) {
+      card.querySelector('.view-mode').classList.toggle('hidden', isEdit);
+      card.querySelector('.edit-mode').classList.toggle('hidden', !isEdit);
+    }
+
+    function handleCardClick(e, container) {
+      const card = e.target.closest('.workout-card');
+      if (!card) return;
+
+      if (e.target.closest('.edit-btn')) {
+        toggleEdit(card, true);
+      }
+      if (e.target.closest('.cancel-btn')) {
+        const n = card.querySelector('.workout-name-input');
+        const v = card.querySelector('.workout-value-input');
+        n.value = card.querySelector('.workout-name').textContent;
+        v.value = card.querySelector('.workout-value').textContent;
+        toggleEdit(card, false);
+      }
+      if (e.target.closest('.save-btn')) {
+        card.querySelector('.workout-name').textContent = card.querySelector('.workout-name-input').value;
+        card.querySelector('.workout-value').textContent = card.querySelector('.workout-value-input').value;
+        toggleEdit(card, false);
+        calculateTotals();
+      }
+      if (e.target.closest('.delete-btn')) {
+        if (confirm('Delete this stat?')) {
+          card.remove();
+          calculateTotals();
+        }
+      }
+    }
+
+    defenceContainer.addEventListener('click', e => handleCardClick(e, defenceContainer));
+    attackContainer.addEventListener('click', e => handleCardClick(e, attackContainer));
+
+    function createWorkoutCard(isAttack = false) {
+      const card = document.createElement('div');
+      card.className = 'workout-card';
+      
+      if (isAttack) {
+        card.innerHTML = `
+          <div class="view-mode hidden">
+            <div class="flex items-center gap-2 justify-end">
+              <button type="button" class="delete-btn text-red-400 hover:text-red-600 text-xs">
+                <i class="fas fa-times"></i>
+              </button>
+              <button type="button" class="edit-btn text-indigo-300 hover:text-indigo-100 text-xs mr-1">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <div class="flex-1">
+                <div class="flex justify-between items-center">
+                  <span class="workout-value text-red-300 text-sm font-bold"></span>
+                  <span class="workout-name text-white text-xs font-bold uppercase"></span>
+                </div>
+              </div>
+              <span class="text-red-400 text-sm">👊</span>
+            </div>
+          </div>
+          <div class="edit-mode">
+            <input type="text" class="workout-name-input w-full mb-1 px-2 py-1 rounded bg-black/40 border border-indigo-400 text-white text-xs font-semibold uppercase" placeholder="Stat Name">
+            <input type="number" class="workout-value-input w-full mb-1 px-2 py-1 rounded bg-black/40 border border-indigo-400 text-white text-xs" placeholder="Value">
+            <div class="flex justify-end gap-1">
+              <button type="button" class="cancel-btn bg-gray-600 hover:bg-gray-700 px-2 py-1 rounded text-xs">Cancel</button>
+              <button type="button" class="save-btn bg-indigo-600 hover:bg-indigo-700 px-2 py-1 rounded text-xs">Save</button>
+            </div>
+          </div>`;
+      } else {
+        card.innerHTML = `
+          <div class="view-mode hidden">
+            <div class="flex items-center gap-2">
+              <span class="text-yellow-400 text-sm">⭐</span>
+              <div class="flex-1">
+                <div class="flex justify-between items-center">
+                  <span class="workout-name text-white text-xs font-bold uppercase"></span>
+                  <span class="workout-value text-blue-300 text-sm font-bold"></span>
+                </div>
+              </div>
+              <button type="button" class="edit-btn text-indigo-300 hover:text-indigo-100 text-xs ml-1">
+                <i class="fas fa-pencil"></i>
+              </button>
+              <button type="button" class="delete-btn text-red-400 hover:text-red-600 text-xs">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          <div class="edit-mode">
+            <input type="text" class="workout-name-input w-full mb-1 px-2 py-1 rounded bg-black/40 border border-indigo-400 text-white text-xs font-semibold uppercase" placeholder="Stat Name">
+            <input type="number" class="workout-value-input w-full mb-1 px-2 py-1 rounded bg-black/40 border border-indigo-400 text-white text-xs" placeholder="Value">
+            <div class="flex justify-end gap-1">
+              <button type="button" class="cancel-btn bg-gray-600 hover:bg-gray-700 px-2 py-1 rounded text-xs">Cancel</button>
+              <button type="button" class="save-btn bg-indigo-600 hover:bg-indigo-700 px-2 py-1 rounded text-xs">Save</button>
+            </div>
+          </div>`;
+      }
+      
+      return card;
+    }
+
+    document.querySelector('.add-defence-btn').addEventListener('click', () => {
+      const card = createWorkoutCard(false);
+      defenceContainer.appendChild(card);
+      card.querySelector('.workout-name-input').focus();
+    });
+
+    document.querySelector('.add-attack-btn').addEventListener('click', () => {
+      const card = createWorkoutCard(true);
+      attackContainer.appendChild(card);
+      card.querySelector('.workout-name-input').focus();
+    });
+
+    document.querySelector('form').addEventListener('submit', e => {
+      document.querySelectorAll('input[name^="workout_"]').forEach(el => el.remove());
+      
+      defenceContainer.querySelectorAll('.workout-card').forEach(card => {
+        const name = card.querySelector('.workout-name').textContent.trim();
+        const value = card.querySelector('.workout-value').textContent.trim();
+        if (name || value) {
+          const n = document.createElement('input');
+          n.type = 'hidden'; n.name = 'workout_name[]'; n.value = name; e.target.appendChild(n);
+          const v = document.createElement('input');
+          v.type = 'hidden'; v.name = 'workout_value[]'; v.value = value; e.target.appendChild(v);
+        }
+      });
+      
+      attackContainer.querySelectorAll('.workout-card').forEach(card => {
+        const name = card.querySelector('.workout-name').textContent.trim();
+        const value = card.querySelector('.workout-value').textContent.trim();
+        if (name || value) {
+          const n = document.createElement('input');
+          n.type = 'hidden'; n.name = 'workout_name[]'; n.value = name; e.target.appendChild(n);
+          const v = document.createElement('input');
+          v.type = 'hidden'; v.name = 'workout_value[]'; v.value = value; e.target.appendChild(v);
+        }
+      });
+    });
+
+    const sigView = card.querySelector('.wwe-signature-view');
+    const sigEdit = card.querySelector('.wwe-signature-edit');
+    const sigInput = card.querySelector('.wwe-signature-input');
+    const sigSave = card.querySelector('.wwe-signature-save');
+    const sigCancel = card.querySelector('.wwe-signature-cancel');
+    const sigHidden = card.querySelector('.wwe-signature-hidden');
+
+    if (sigView && sigEdit && sigInput && sigHidden) {
+      sigView.onclick = () => {
+        sigView.classList.add('hidden');
+        sigEdit.classList.remove('hidden');
+        sigInput.focus();
+        sigInput.select();
+      };
+
+      sigCancel.onclick = () => {
+        sigInput.value = sigView.textContent.trim();
+        sigEdit.classList.add('hidden');
+        sigView.classList.remove('hidden');
+      };
+
+      sigSave.onclick = () => {
+        const val = sigInput.value.trim().toUpperCase() || 'BEST';
+        sigView.textContent = val;
+        sigInput.value = val;
+        sigHidden.value = val;  // Update the hidden input
+        sigEdit.classList.add('hidden');
+        sigView.classList.remove('hidden');
+      };
+
+      sigInput.onkeypress = (e) => {
+        if (e.key === 'Enter') sigSave.click();
+      };
+    }
+
+
+    // 3D Tilt Effect
+    container.addEventListener('mousemove', (e) => {
+      const rect = container.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      
+      const centerX = rect.width / 2;
+      const centerY = rect.height / 2;
+      
+      const rotateX = (y - centerY) / 10;
+      const rotateY = (centerX - x) / 10;
+      
+      card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      card.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+    });
+
+    // Calculate totals on page load
+    calculateTotals();
+  </script>
+</body>
+</html>

@@ -1,0 +1,241 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{{ profile.user.username }}'s Profile</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Teko:wght@700&display=swap');
+    
+    body {
+      font-family: 'Bebas Neue', sans-serif;
+    }
+    
+    .card-container {
+      perspective: 1000px;
+    }
+    
+    .card {
+      transition: transform 0.6s;
+      transform-style: preserve-3d;
+    }
+    
+    .card:hover {
+      transform: rotateY(5deg) rotateX(5deg) scale(1.02);
+    }
+    
+    .shine {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+      transition: left 0.5s;
+      pointer-events: none;
+      z-index: 5;
+    }
+    
+    .card:hover .shine {
+      left: 100%;
+    }
+    
+    .star {
+      filter: drop-shadow(0 0 3px #ffd700);
+      animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
+    .stat-glow {
+      text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+    }
+    
+    .teko-font {
+      font-family: 'Teko', sans-serif;
+    }
+  </style>
+</head>
+
+<body class="bg-gray-900 flex items-center justify-center min-h-screen p-4">
+
+  <div class="card-container">
+    <div class="card bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden relative" style="width: 400px; max-width: 95vw;">
+      
+      <div class="shine"></div>
+
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-red-600 to-red-700 px-4 py-2 flex justify-between items-center">
+        <div class="text-white text-xl font-bold tracking-wider">GYM</div>
+        <div class="bg-red-500 text-white px-4 py-1 text-sm font-bold skew-x-[-10deg] shadow-lg">
+          SIGNATURE LIFTS
+        </div>
+      </div>
+
+      <!-- Image Section -->
+      <div class="relative bg-black">
+        <div class="aspect-video bg-gradient-to-br from-gray-700 to-gray-900 bg-cover bg-center relative overflow-hidden"
+             style="background-image: url('{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'default_profile.png' %}{% endif %}');">
+          <div class="absolute inset-0 bg-black/30"></div>
+        </div>
+      </div>
+
+      <!-- Name Banner -->
+      <div class="bg-gradient-to-r from-red-600 via-red-700 to-red-600 py-3 text-center relative overflow-hidden">
+        <div class="text-white text-4xl font-bold tracking-wide stat-glow teko-font">
+          {{ profile.user.username|upper }}®
+        </div>
+        <div class="text-yellow-300 text-2xl font-bold tracking-wider stat-glow teko-font">
+          {% if profile.signature_move %}{{ profile.signature_move|upper }}{% else %}BEST{% endif %}
+        </div>
+      </div>
+
+      <!-- Star Rating -->
+      <div class="bg-gray-900 py-3 flex justify-center gap-2">
+        <span class="star text-yellow-400 text-2xl">★</span>
+        <span class="star text-yellow-400 text-2xl">★</span>
+        <span class="star text-yellow-400 text-2xl">★</span>
+        <span class="star text-yellow-400 text-2xl">★</span>
+        <span class="star text-yellow-400 text-2xl">★</span>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="bg-gradient-to-b from-gray-800 to-gray-900 p-4">
+        <div class="flex justify-between items-start gap-2">
+          <!-- Defence Stats (Left) - ALL ODD INDEX WORKOUTS -->
+          <div class="text-left flex-1 defence-section">
+            <div class="text-blue-400 text-5xl font-bold stat-glow mb-2 teko-font defence-total">0</div>
+            <div class="text-white text-xs uppercase tracking-wider mb-2 font-bold">UPPER</div>
+            
+            <div class="space-y-2 defence-stats">
+              {% for workout in profile.workouts %}
+              {% if forloop.counter0|divisibleby:2 %}
+              <div class="flex items-center gap-2">
+                <span class="text-yellow-400 text-sm">⭐</span>
+                <div class="flex-1 flex justify-between items-center">
+                  <span class="text-white text-xs font-bold uppercase">{{ workout.name }}</span>
+                  <span class="text-blue-300 text-sm font-bold workout-value" data-value="{{ workout.value }}">{{ workout.value }}</span>
+                </div>
+              </div>
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- Center Logo -->
+          <div class="text-center px-2 flex-shrink-0">
+            <div class="text-yellow-400 text-4xl font-bold teko-font">RATS</div>
+            <div class="text-gray-500 text-xs">®</div>
+          </div>
+
+          <!-- Attack Stats (Right) - ALL EVEN INDEX WORKOUTS -->
+          <div class="text-right flex-1 attack-section">
+            <div class="text-red-500 text-5xl font-bold stat-glow mb-2 teko-font attack-total">0</div>
+            <div class="text-white text-xs uppercase tracking-wider mb-2 font-bold">LOWER</div>
+            
+            <div class="space-y-2 attack-stats">
+              {% for workout in profile.workouts %}
+              {% if not forloop.counter0|divisibleby:2 %}
+              <div class="flex items-center gap-2 justify-end">
+                <div class="flex-1 flex justify-between items-center">
+                  <span class="text-red-300 text-sm font-bold workout-value" data-value="{{ workout.value }}">{{ workout.value }}</span>
+                  <span class="text-white text-xs font-bold uppercase">{{ workout.name }}</span>
+                </div>
+                <span class="text-red-400 text-sm">👊</span>
+              </div>
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Border -->
+      <div class="bg-gradient-to-r from-red-600 to-red-700 h-2"></div>
+    </div>
+  </div>
+
+  <script>
+    // Wait for DOM to be fully loaded
+    document.addEventListener('DOMContentLoaded', function() {
+      const card = document.querySelector('.card');
+      const container = document.querySelector('.card-container');
+
+      // Function to calculate totals
+      function calculateTotals() {
+        // Calculate Defence Total (UPPER) - All odd positions
+        let defenceTotal = 0;
+        const defenceSection = document.querySelector('.defence-section');
+        
+        if (defenceSection) {
+          const defenceValues = defenceSection.querySelectorAll('.workout-value');
+          console.log('Defence workouts found:', defenceValues.length); // DEBUG
+          
+          defenceValues.forEach(el => {
+            const value = parseInt(el.getAttribute('data-value') || el.textContent) || 0;
+            console.log('Defence value:', value); // DEBUG
+            defenceTotal += value;
+          });
+        }
+        
+        const defenceTotalEl = document.querySelector('.defence-total');
+        if (defenceTotalEl) {
+          defenceTotalEl.textContent = defenceTotal;
+          console.log('Total Defence:', defenceTotal); // DEBUG
+        }
+
+        // Calculate Attack Total (LOWER) - All even positions
+        let attackTotal = 0;
+        const attackSection = document.querySelector('.attack-section');
+        
+        if (attackSection) {
+          const attackValues = attackSection.querySelectorAll('.workout-value');
+          console.log('Attack workouts found:', attackValues.length); // DEBUG
+          
+          attackValues.forEach(el => {
+            const value = parseInt(el.getAttribute('data-value') || el.textContent) || 0;
+            console.log('Attack value:', value); // DEBUG
+            attackTotal += value;
+          });
+        }
+        
+        const attackTotalEl = document.querySelector('.attack-total');
+        if (attackTotalEl) {
+          attackTotalEl.textContent = attackTotal;
+          console.log('Total Attack:', attackTotal); // DEBUG
+        }
+      }
+
+      // Calculate on page load
+      calculateTotals();
+
+      // 3D Tilt Effect
+      if (container && card) {
+        container.addEventListener('mousemove', (e) => {
+          const rect = container.getBoundingClientRect();
+          const x = e.clientX - rect.left;
+          const y = e.clientY - rect.top;
+          
+          const centerX = rect.width / 2;
+          const centerY = rect.height / 2;
+          
+          const rotateX = (y - centerY) / 10;
+          const rotateY = (centerX - x) / 10;
+          
+          card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+        });
+
+        container.addEventListener('mouseleave', () => {
+          card.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+        });
+      }
+    });
+  </script>
+
+</body>
+</html>

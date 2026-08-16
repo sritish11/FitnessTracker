@@ -1,0 +1,12 @@
+<div class="max-w-md mx-auto bg-white rounded-2xl p-4">
+  <h2 class="text-xl font-bold mb-4">💬 Chats</h2>
+  <ul class="space-y-3">
+    {% for f in friends %}
+      <li>
+        <a href="{% url 'chat_room' f.id %}" class="block p-3 rounded-lg hover:bg-gray-100">
+          {{ f.username }}
+        </a>
+      </li>
+    {% endfor %}
+  </ul>
+</div>

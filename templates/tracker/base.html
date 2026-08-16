@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Esstentail</title>
+
+  <link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body class="bg-blue-50 min-h-screen">
+    <!-- Decorative Icons -->
+    <i class="fas fa-dumbbell text-[8rem] text-indigo-300 opacity-20 absolute bottom-4 left-4 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-apple-alt text-[8rem] text-green-300 opacity-20 absolute top-4 right-4 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-carrot text-[6rem] text-orange-300 opacity-20 absolute top-24 left-12 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-bottle-water text-[6rem] text-blue-200 opacity-20 absolute bottom-24 right-12 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-basketball-ball text-[5rem] text-yellow-300 opacity-20 absolute top-1/2 left-2 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-running text-[6rem] text-purple-300 opacity-20 absolute bottom-12 left-1/3 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-seedling text-[6rem] text-green-400 opacity-20 absolute bottom-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-fish text-[5rem] text-blue-300 opacity-20 absolute top-1/3 right-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-bread-slice text-[5rem] text-yellow-400 opacity-20 absolute bottom-1/3 left-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-sun text-[7rem] text-orange-200 opacity-20 absolute top-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-bed text-[6rem] text-indigo-200 opacity-20 absolute bottom-8 right-1/3 hidden md:block pointer-events-none select-none z-0"></i>
+    <i class="fas fa-egg text-[5rem] text-yellow-200 opacity-20 absolute bottom-1/2 right-2 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <!-- HEADER -->
+  <header class="shadow-md">
+    <!-- Top Nav -->
+    <nav class="bg-gray-900 text-gray-100 text-sm">
+      <div class="max-w-7xl mx-auto flex justify-between items-center px-4 py-2">
+        <!-- Left links -->
+        <ul class="hidden md:flex space-x-8">
+          <li><a href="{% url 'index' %}" class="hover:text-indigo-400 transition">Home</a></li>
+          <li><a href="{% url 'dashboard' %}" class="hover:text-indigo-400 transition">Dashboard</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Delivery</a></li>
+          <li><a href="#" class="hover:text-indigo-400 transition">Category</a></li>
+        </ul>
+
+        <!-- Right links -->
+        <ul class="flex items-center gap-6">
+          <li><a href="#" class="hover:text-indigo-400 transition">Call: +99812345678</a></li>
+          <li class="relative group">
+            <button class="flex items-center gap-1 hover:text-indigo-400 transition">
+              English <i class="fa fa-chevron-down text-xs"></i>
+            </button>
+            <div class="absolute right-0 mt-2 w-28 bg-white text-gray-700 rounded-lg shadow-lg hidden group-hover:block">
+              <a href="#" class="block px-4 py-2 hover:bg-indigo-50 hover:text-indigo-600 transition">Arabic</a>
+              <a href="#" class="block px-4 py-2 hover:bg-indigo-50 hover:text-indigo-600 transition">Russian</a>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </nav>
+
+    <!-- Main Header -->
+    <section class="bg-white border-b">
+      <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 items-center gap-6 px-4 py-4">
+
+        <!-- Logo -->
+        <div class="md:col-span-2 flex justify-center md:justify-start">
+          <a href="#">
+            {% comment %} <img src="image/logo.png" alt="Logo" class="h-12"> {% endcomment %}
+          </a>
+        </div>
+
+        <!-- Search bar -->
+        <div class="md:col-span-6">
+          <form action="#" class="flex">
+            <input type="text" placeholder="Search"
+                   class="flex-grow border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400">
+            <button type="submit"
+                    class="bg-indigo-500 hover:bg-indigo-600 text-white px-4 rounded-r-lg transition">
+              <i class="fa fa-search"></i>
+            </button>
+          </form>
+        </div>
+
+        <!-- User & Cart Section -->
+        <div class="md:col-span-4 flex justify-center md:justify-end items-center gap-6">
+          <!-- Cart -->
+          <div class="relative">
+            <a href="#" class="inline-flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 hover:bg-gray-100 transition">
+              <i class="fa fa-shopping-cart"></i>
+            </a>
+            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-xs px-1 rounded-full">
+              {% comment %} {{ request.user.profile.get_cart_count }} {% endcomment %}
+            </span>
+          </div>
+
+          <!-- User -->
+          <div class="relative" x-data="{ open: false }">
+  <div class="flex items-center gap-2">
+    <!-- Toggle Button -->
+    <button
+      @click="open = !open"
+      class="inline-flex items-center justify-center w-10 h-10 rounded-full border border-gray-300 hover:bg-gray-100 transition"
+    >
+      <i class="fas fa-user"></i>
+    </button>
+
+    <!-- Dropdown Menu -->
+    <div
+      x-show="open"
+      x-transition
+      @click.away="open = false"
+      x-cloak
+      class="absolute right-0 top-full mt-2 w-40 bg-white py-2 rounded-lg shadow-xl z-50"
+    >
+      <span class="block px-4 py-1 text-gray-500 text-sm">{{ user.username }}</span>
+      <a href="{% url 'logout' %}" class="block px-4 py-1 text-sm text-gray-700 hover:text-indigo-500">Logout</a>
+    </div>
+  </div>
+</div>
+
+        </div>
+      </div>
+    </section>
+  </header>
+
+  <!-- Page content -->
+  <main class="max-w-7xl mx-auto p-4">
+    {% block start %}{% endblock %}
+  </main>
+
+</body>
+</html>

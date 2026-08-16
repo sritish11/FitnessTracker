@@ -1,0 +1,38 @@
+{% extends "tracker/base.html" %}
+{% load static %}
+
+{% block start %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  {% if products %}
+  <!-- Responsive Grid -->
+  <div class="grid gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+    {% for product in products %}
+    <div class="bg-white rounded-xl shadow-md hover:shadow-lg transition overflow-hidden flex flex-col">
+      <!-- Product Image -->
+      <a href="{% url 'get_product' product.slug %}">
+        <img src="{{ product.product_image.first.image.url }}" 
+             alt="{{ product.product_name }}" 
+             class="h-56 w-full object-cover">
+      </a>
+
+      <!-- Product Info -->
+      <div class="p-4 flex flex-col flex-1">
+        <a href="{% url 'get_product' product.slug %}" 
+           class="text-lg font-semibold text-gray-900 hover:text-indigo-600 transition">
+          {{ product.product_name }}
+        </a>
+        <div class="mt-2 text-indigo-600 font-bold text-xl">
+          ₹{{ product.price|floatformat:2 }}
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <!-- Empty State -->
+  <div class="text-center py-16">
+    <p class="text-gray-500 text-lg">No products available.</p>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

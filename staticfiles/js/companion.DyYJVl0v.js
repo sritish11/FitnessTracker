@@ -1,0 +1,1 @@
+import{b as t,j as e,C as n}from"./CompanionWidget.C0ZwIyzP.js";const o=document.getElementById("companion-root");o?t.createRoot(o).render(e.jsx(n,{})):console.warn("⚠️ Companion widget root element not found.");

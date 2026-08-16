@@ -1,0 +1,212 @@
+{% load static %}
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Teko:wght@700&display=swap');
+  
+  .wwe-card-wrapper {
+    font-family: 'Bebas Neue', sans-serif;
+  }
+  
+  .wwe-card-container {
+    perspective: 1000px;
+  }
+  
+  .wwe-card {
+    transition: transform 0.6s;
+    transform-style: preserve-3d;
+  }
+  
+  .wwe-card:hover {
+    transform: rotateY(5deg) rotateX(5deg) scale(1.02);
+  }
+  
+  .wwe-shine {
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+    pointer-events: none;
+    z-index: 5;
+  }
+  
+  .wwe-card:hover .wwe-shine {
+    left: 100%;
+  }
+  
+  .wwe-star {
+    filter: drop-shadow(0 0 3px #ffd700);
+    animation: wwe-pulse 2s infinite;
+  }
+  
+  @keyframes wwe-pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  .wwe-stat-glow {
+    text-shadow: 0 0 10px currentColor, 0 0 20px currentColor;
+  }
+  
+  .wwe-teko-font {
+    font-family: 'Teko', sans-serif;
+  }
+</style>
+
+<div class="wwe-card-wrapper">
+  <div class="wwe-card-container">
+    <div class="wwe-card bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl shadow-2xl overflow-hidden relative w-80 max-w-full mx-auto">
+      
+      <div class="wwe-shine"></div>
+
+      <!-- Header -->
+      <div class="bg-gradient-to-r from-red-600 to-red-700 px-3 py-2 flex justify-between items-center">
+        <div class="text-white text-lg font-bold tracking-wider">GYM</div>
+        <div class="bg-red-500 text-white px-3 py-1 text-xs font-bold skew-x-[-10deg] shadow-lg">
+          SIGNATURE LIFTS
+        </div>
+      </div>
+
+      <!-- Image Section -->
+      <div class="relative bg-black">
+        <div class="h-48 bg-gradient-to-br from-gray-700 to-gray-900 bg-cover bg-center relative overflow-hidden"
+             style="background-image: url('{% if profile.profile_picture %}{{ profile.profile_picture.url }}{% else %}{% static 'default_profile.png' %}{% endif %}');">
+          <div class="absolute inset-0 bg-black/30"></div>
+        </div>
+        
+      </div>
+
+      <!-- Name Banner -->
+      <div class="bg-gradient-to-r from-red-600 via-red-700 to-red-600 py-2 text-center relative overflow-hidden">
+        <div class="text-white text-3xl font-bold tracking-wide wwe-stat-glow wwe-teko-font">
+          {{ profile.user.username|upper }}®
+        </div>
+        <div class="text-yellow-300 text-xl font-bold tracking-wider wwe-stat-glow wwe-teko-font">
+          {% if profile.signature_move %}{{ profile.signature_move|upper }}{% else %}BEST{% endif %}
+        </div>
+      </div>
+
+      <!-- Star Rating -->
+      <div class="bg-gray-900 py-2 flex justify-center gap-1.5">
+        <span class="wwe-star text-yellow-400 text-xl">★</span>
+        <span class="wwe-star text-yellow-400 text-xl">★</span>
+        <span class="wwe-star text-yellow-400 text-xl">★</span>
+        <span class="wwe-star text-yellow-400 text-xl">★</span>
+        <span class="wwe-star text-yellow-400 text-xl">★</span>
+      </div>
+
+      <!-- Stats Section -->
+      <div class="bg-gradient-to-b from-gray-800 to-gray-900 p-3">
+        <div class="flex justify-between items-start gap-1.5">
+          <!-- Defence Stats (Left) -->
+          <div class="text-left flex-1 min-w-0">
+            <div class="text-blue-400 text-4xl font-bold wwe-stat-glow mb-1 wwe-teko-font wwe-defence-total">0</div>
+            <div class="text-white text-[10px] uppercase tracking-wider mb-1.5 font-bold">UPPER</div>
+            
+            <div class="space-y-1.5">
+              {% for workout in profile.workouts %}
+              {% if forloop.counter <= 2 %}
+              <div class="flex items-center gap-1">
+                <span class="text-yellow-400 text-xs flex-shrink-0">⭐</span>
+                <div class="flex-1 flex justify-between items-center min-w-0 gap-1">
+                  <span class="text-white text-[10px] font-bold uppercase truncate">{{ workout.name }}</span>
+                  <span class="text-blue-300 text-xs font-bold wwe-workout-value flex-shrink-0">{{ workout.value }}</span>
+                </div>
+              </div>
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+          <!-- WWE Logo (Center) -->
+          <div class="text-center px-1.5 flex-shrink-0">
+            <div class="text-yellow-400 text-3xl font-bold wwe-teko-font leading-none">RATS</div>
+            <div class="text-gray-500 text-[8px]">®</div>
+          </div>
+
+          <!-- Attack Stats (Right) -->
+          <div class="text-right flex-1 min-w-0">
+            <div class="text-red-500 text-4xl font-bold wwe-stat-glow mb-1 wwe-teko-font wwe-attack-total">0</div>
+            <div class="text-white text-[10px] uppercase tracking-wider mb-1.5 font-bold">LOWER</div>
+            
+            <div class="space-y-1.5">
+              {% for workout in profile.workouts %}
+              {% if forloop.counter > 2 and forloop.counter <= 4 %}
+              <div class="flex items-center gap-1 justify-end">
+                <div class="flex-1 flex justify-between items-center min-w-0 gap-1">
+                  <span class="text-red-300 text-xs font-bold wwe-workout-value flex-shrink-0">{{ workout.value }}</span>
+                  <span class="text-white text-[10px] font-bold uppercase truncate">{{ workout.name }}</span>
+                </div>
+                <span class="text-red-400 text-xs flex-shrink-0">👊</span>
+              </div>
+              {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Border -->
+      <div class="bg-gradient-to-r from-red-600 to-red-700 h-1.5"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  (function() {
+    const card = document.querySelector('.wwe-card');
+    const container = document.querySelector('.wwe-card-container');
+
+    // Calculate Defence Total
+    let defenceTotal = 0;
+    const defenceSection = card.querySelector('.text-left');
+    if (defenceSection) {
+      const defenceValues = defenceSection.querySelectorAll('.wwe-workout-value');
+      defenceValues.forEach(el => {
+        const value = parseInt(el.textContent) || 0;
+        defenceTotal += value;
+      });
+      const defenceTotalEl = card.querySelector('.wwe-defence-total');
+      if (defenceTotalEl) {
+        defenceTotalEl.textContent = defenceTotal;
+      }
+    }
+
+    // Calculate Attack Total
+    let attackTotal = 0;
+    const attackSection = card.querySelector('.text-right');
+    if (attackSection) {
+      const attackValues = attackSection.querySelectorAll('.wwe-workout-value');
+      attackValues.forEach(el => {
+        const value = parseInt(el.textContent) || 0;
+        attackTotal += value;
+      });
+      const attackTotalEl = card.querySelector('.wwe-attack-total');
+      if (attackTotalEl) {
+        attackTotalEl.textContent = attackTotal;
+      }
+   // } 
+
+    // 3D Tilt Effect
+    if (container && card) {
+      container.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        
+        const centerX = rect.width / 2;
+        const centerY = rect.height / 2;
+        
+        const rotateX = (y - centerY) / 10;
+        const rotateY = (centerX - x) / 10;
+        
+        card.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+      });
+
+      container.addEventListener('mouseleave', () => {
+        card.style.transform = 'rotateX(0) rotateY(0) scale(1)';
+      });
+    }
+  })();
+</script>

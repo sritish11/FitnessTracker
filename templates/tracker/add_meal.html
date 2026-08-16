@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body class="bg-blue-50 flex justify-center items-center min-h-screen">
+    <i class="fas fa-dumbbell text-[8rem] text-indigo-300 opacity-20 absolute bottom-4 left-4 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-apple-alt text-[8rem] text-green-300 opacity-20 absolute top-4 right-4 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-carrot text-[6rem] text-orange-300 opacity-20 absolute top-24 left-12 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-bottle-water text-[6rem] text-blue-200 opacity-20 absolute bottom-24 right-12 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-basketball-ball text-[5rem] text-yellow-300 opacity-20 absolute top-1/2 left-2 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-running text-[6rem] text-purple-300 opacity-20 absolute bottom-12 left-1/3 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <!-- Broccoli -->
+  <i class="fas fa-seedling text-[6rem] text-green-400 opacity-20 absolute bottom-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+
+<!-- Fish -->
+  <i class="fas fa-fish text-[5rem] text-blue-300 opacity-20 absolute top-1/3 right-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+
+<!-- Bread -->
+  <i class="fas fa-bread-slice text-[5rem] text-yellow-400 opacity-20 absolute bottom-1/3 left-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <!-- Sun (outdoor / energy) -->
+  <i class="fas fa-sun text-[7rem] text-orange-200 opacity-20 absolute top-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+
+<!-- Bed (rest / recovery) -->
+  <i class="fas fa-bed text-[6rem] text-indigo-200 opacity-20 absolute bottom-8 right-1/3 hidden md:block pointer-events-none select-none z-0"></i>
+  
+  <i class="fas fa-egg text-[5rem] text-yellow-200 opacity-20 absolute bottom-1/2 right-2 hidden md:block pointer-events-none select-none z-0"></i>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+        <h2 class="text-center text-2xl font-bold text-gray-800 mb-4">🥗 Add Meal</h2>
+
+        <form method="post" id="mealForm" class="space-y-4">
+            {% csrf_token %}
+
+            <!-- Meal Name -->
+            <div>
+                <label for="meal_name" class="block font-medium text-gray-700">Meal Name</label>
+                <input type="text" id="meal_name" name="meal_name" placeholder="e.g., Breakfast, Lunch" 
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                    required>
+                <p id="mealError" class="text-red-500 text-sm hidden">⚠ Please enter a meal name.</p>
+            </div>
+
+            <!-- Calories Consumed -->
+            <div>
+                <label for="calories_consumed" class="block font-medium text-gray-700">Calories Consumed</label>
+                <input type="number" id="calories_consumed" name="calories_consumed" placeholder="e.g., 500" 
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                    required>
+                <p id="caloriesError" class="text-red-500 text-sm hidden">⚠ Please enter a valid calorie amount.</p>
+            </div>
+
+            <!-- Proteins Consumed -->
+            <div>
+                <label for="proteins_consumed" class="block font-medium text-gray-700">Proteins Consumed</label>
+                <input type="number" id="proteins_consumed" name="proteins_consumed" placeholder="e.g., 20" 
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                    required>
+                <p id="proteinsError" class="text-red-500 text-sm hidden">⚠ Please enter a valid protein amount.</p>
+            </div>
+
+            <!-- Fibres Consumed -->
+            <div>
+                <label for="fibres_consumed" class="block font-medium text-gray-700">Fibres Consumed</label>
+                <input type="number" id="fibres_consumed" name="fibres_consumed" placeholder="e.g., 5" 
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                    required>
+                <p id="fibresError" class="text-red-500 text-sm hidden">⚠ Please enter a valid fibre amount.</p>
+            </div>
+
+            <!-- Carbs Consumed -->
+            <div>
+                <label for="carbs_consumed" class="block font-medium text-gray-700">Carbs Consumed</label>
+                <input type="number" id="carbs_consumed" name="carbs_consumed" placeholder="e.g., 50" 
+                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+                    required>
+                <p id="carbsError" class="text-red-500 text-sm hidden">⚠ Please enter a valid carb amount.</p>
+            </div>
+
+            <!-- Live Counter for Calories -->
+            <div class="bg-gray-100 p-3 rounded-md flex justify-between items-center">
+                <span class="text-gray-700">Total Calories:</span>
+                <span id="caloriesCount" class="text-lg font-semibold text-blue-500">0 kcal</span>
+            </div>
+
+            <!-- Live Counter for Proteins -->
+            <div class="bg-gray-100 p-3 rounded-md flex justify-between items-center">
+                <span class="text-gray-700">Total Proteins:</span>
+                <span id="proteinsCount" class="text-lg font-semibold text-blue-500">0 gm</span>
+            </div>
+
+            <!-- Live Counter for Fibres -->
+            <div class="bg-gray-100 p-3 rounded-md flex justify-between items-center">
+                <span class="text-gray-700">Total Fibres:</span>
+                <span id="fibresCount" class="text-lg font-semibold text-green-500">0 gm</span>
+            </div>
+
+            <!-- Live Counter for Carbs -->
+            <div class="bg-gray-100 p-3 rounded-md flex justify-between items-center">
+                <span class="text-gray-700">Total Carbs:</span>
+                <span id="carbsCount" class="text-lg font-semibold text-pink-500">0 gm</span>
+            </div>
+
+            <!-- Submit Button -->
+            <button type="submit" class="w-full bg-green-500 hover:bg-green-600 text-white font-semibold py-2 rounded-lg transition duration-200">
+                ➕ Add Meal
+            </button>
+        </form>
+    </div>
+
+    <!-- JavaScript for Real-time Validation & Counters -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const mealInput = document.getElementById("meal_name");
+            const caloriesInput = document.getElementById("calories_consumed");
+            const proteinsInput = document.getElementById("proteins_consumed");
+            const fibresInput = document.getElementById("fibres_consumed");
+            const carbsInput = document.getElementById("carbs_consumed");
+
+            const caloriesCount = document.getElementById("caloriesCount");
+            const proteinsCount = document.getElementById("proteinsCount");
+            const fibresCount = document.getElementById("fibresCount");
+            const carbsCount = document.getElementById("carbsCount");
+
+            const mealError = document.getElementById("mealError");
+            const caloriesError = document.getElementById("caloriesError");
+            const proteinsError = document.getElementById("proteinsError");
+            const fibresError = document.getElementById("fibresError");
+            const carbsError = document.getElementById("carbsError");
+
+            // --- Reset meal form after 24 hours ---
+            const mealForm = document.getElementById("mealForm");
+            const MEAL_RESET_KEY = "lastMealSubmission";
+            const now = Date.now();
+            const lastSubmission = localStorage.getItem(MEAL_RESET_KEY);
+
+            // If more than 24 hours (86400000 ms) have passed, reset the form
+            if (lastSubmission && now - Number(lastSubmission) > 86400000) {
+                mealForm.reset();
+                caloriesCount.textContent = "0 kcal";
+                proteinsCount.textContent = "0 gm";
+                fibresCount.textContent = "0 gm";
+                carbsCount.textContent = "0 gm";
+            }
+
+            // On form submit, update the timestamp
+            mealForm.addEventListener("submit", () => {
+                localStorage.setItem(MEAL_RESET_KEY, Date.now());
+            });
+
+
+            // ✅ Live Counter Updates
+            caloriesInput.addEventListener("input", () => {
+                caloriesCount.textContent = caloriesInput.value ? `${caloriesInput.value} kcal` : "0 kcal";
+            });
+
+            proteinsInput.addEventListener("input", () => {
+                proteinsCount.textContent = proteinsInput.value ? `${proteinsInput.value} gm` : "0 gm";
+            });
+
+            fibresInput.addEventListener("input", () => {
+                fibresCount.textContent = fibresInput.value ? `${fibresInput.value} gm` : "0 gm";
+            });
+
+            carbsInput.addEventListener("input", () => {
+                carbsCount.textContent = carbsInput.value ? `${carbsInput.value} gm` : "0 gm";
+            });
+
+            // ✅ Real-time Validation
+            mealInput.addEventListener("input", () => {
+                mealError.classList.toggle("hidden", mealInput.value.trim() !== "");
+            });
+
+            caloriesInput.addEventListener("input", () => {
+                caloriesError.classList.toggle("hidden", caloriesInput.value > 0);
+            });
+
+            // ✅ Form Submission Validation
+            document.getElementById("mealForm").addEventListener("submit", (event) => {
+                let isValid = true;
+
+                if (!mealInput.value.trim()) {
+                    mealError.classList.remove("hidden");
+                    isValid = false;
+                }
+
+                if (Number(caloriesInput.value) <= 0) {
+                    caloriesError.classList.remove("hidden");
+                    isValid = false;
+                }
+
+                if (!isValid) event.preventDefault();
+            });
+        });
+    </script>
+</body>
+</html>

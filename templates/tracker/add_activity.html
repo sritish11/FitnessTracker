@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body class="bg-red-50 flex items-center justify-center min-h-screen">
+    <i class="fas fa-dumbbell text-[8rem] text-indigo-300 opacity-20 absolute bottom-4 left-4 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-apple-alt text-[8rem] text-green-300 opacity-20 absolute top-4 right-4 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-carrot text-[6rem] text-orange-300 opacity-20 absolute top-24 left-12 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-bottle-water text-[6rem] text-blue-200 opacity-20 absolute bottom-24 right-12 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-basketball-ball text-[5rem] text-yellow-300 opacity-20 absolute top-1/2 left-2 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <i class="fas fa-running text-[6rem] text-purple-300 opacity-20 absolute bottom-12 left-1/3 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <!-- Broccoli -->
+  <i class="fas fa-seedling text-[6rem] text-green-400 opacity-20 absolute bottom-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+
+<!-- Fish -->
+  <i class="fas fa-fish text-[5rem] text-blue-300 opacity-20 absolute top-1/3 right-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+
+<!-- Bread -->
+  <i class="fas fa-bread-slice text-[5rem] text-yellow-400 opacity-20 absolute bottom-1/3 left-1/4 hidden md:block pointer-events-none select-none z-0"></i>
+
+  <!-- Sun (outdoor / energy) -->
+  <i class="fas fa-sun text-[7rem] text-orange-200 opacity-20 absolute top-8 left-1/2 hidden md:block pointer-events-none select-none z-0"></i>
+
+<!-- Bed (rest / recovery) -->
+  <i class="fas fa-bed text-[6rem] text-indigo-200 opacity-20 absolute bottom-8 right-1/3 hidden md:block pointer-events-none select-none z-0"></i>
+  
+  <i class="fas fa-egg text-[5rem] text-yellow-200 opacity-20 absolute bottom-1/2 right-2 hidden md:block pointer-events-none select-none z-0"></i>
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-md">
+        <h2 class="text-2xl font-bold text-center mb-4">Add Activity</h2>
+        <form method="post" class="needs-validation" novalidate>
+            {% csrf_token %}
+            
+            <div class="mb-4">
+                <label for="activity_type" class="block font-medium text-gray-700">Activity Type</label>
+                <input type="text" class="w-full p-2 border rounded-md focus:ring focus:ring-blue-300" id="activity_type" name="activity_type" placeholder="e.g., Running, Swimming" required>
+                <p class="text-red-500 text-sm mt-1 hidden">Please enter an activity type.</p>
+            </div>
+            <div class="mb-4">
+                <label for="duration" class="block font-medium text-gray-700">Duration (in minutes)</label>
+                <input type="number" class="w-full p-2 border rounded-md focus:ring focus:ring-blue-300" id="duration" name="duration" placeholder="e.g., 30" required>
+                <p class="text-red-500 text-sm mt-1 hidden">Please enter the duration in minutes.</p>
+            </div>
+            <div class="mb-4">
+                <label for="calories_burned" class="block font-medium text-gray-700">Calories Burned</label>
+                <input type="number" class="w-full p-2 border rounded-md focus:ring focus:ring-blue-300" id="calories_burned" name="calories_burned" placeholder="e.g., 500" required>
+                <p class="text-red-500 text-sm mt-1 hidden">Please enter the calories burned.</p>
+            </div>
+            <button type="submit" class="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-md transition">Add Activity</button>
+        </form>
+    </div>
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const form = document.querySelector(".needs-validation");
+            const inputs = form.querySelectorAll("input");
+
+            form.addEventListener("submit", function(event) {
+                let valid = true;
+                inputs.forEach(input => {
+                    const errorMessage = input.nextElementSibling;
+                    if (!input.value.trim()) {
+                        errorMessage.classList.remove("hidden");
+                        valid = false;
+                    } else {
+                        errorMessage.classList.add("hidden");
+                    }
+                });
+                if (!valid) {
+                    event.preventDefault();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
